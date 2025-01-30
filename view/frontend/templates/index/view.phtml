@@ -1,0 +1,73 @@
+<?php
+
+/** @var $block \PinBlooms\MasterData\Block\MasterData\Index */ ?>
+<?php $mskuValue = $block->getQrValueFromRequest(); ?>
+<?php $mValueData = !empty($mskuValue) ? $block->getDataByQrValue($mskuValue) : [] ?>
+<?php $genuineImg = $block->getViewFileUrl('PinBlooms_MasterData::images/genuine.png'); ?>
+<?php $elseImg = $block->getViewFileUrl('PinBlooms_MasterData::images/not-genuine.png'); ?>
+<section class="masterdata-section">
+    <?php if (isset($mValueData) && !empty($mValueData)) { ?>
+        <div class="masterdata-first-div">
+            <h3>THIS PRODUCT IS 100% GENUINE</h3>
+            <p class="masterdata-line"></p>
+            <p>Genuine Product</p>
+            <img src="<?= /* @noEscape */ $genuineImg ?>" alt="Genuine Product">
+        </div>
+        <div class="masterdata-second-div">
+            <p><?= /* @noEscape */ $mValueData[\PinBlooms\MasterData\Model\MasterData::PINBLOOMS_MASTERDATA_M_SKU];
+                ?> is Genuine</p>
+
+            <?php if ($block->getFlagToShowFieldsByFieldName(
+                \PinBlooms\MasterData\Model\MasterData::PINBLOOMS_MASTERDATA_M_PRODUCT_TYPE
+            )) { ?>
+                <p>Product Type : <?= /* @noEscape */ $mValueData[\PinBlooms\MasterData\Model\MasterData::PINBLOOMS_MASTERDATA_M_PRODUCT_TYPE];
+                                    ?></p>
+            <?php } ?>
+
+            <?php if ($block->getFlagToShowFieldsByFieldName(
+                \PinBlooms\MasterData\Model\MasterData::PINBLOOMS_MASTERDATA_M_CATEGORY
+            )) { ?>
+                <p>Category : <?= /* @noEscape */ $mValueData[\PinBlooms\MasterData\Model\MasterData::PINBLOOMS_MASTERDATA_M_CATEGORY];
+                                ?></p>
+            <?php } ?>
+
+            <?php if ($block->getFlagToShowFieldsByFieldName(
+                \PinBlooms\MasterData\Model\MasterData::PINBLOOMS_MASTERDATA_M_ISSUE_TYPE
+            )) { ?>
+                <p>Issue Type : <?= /* @noEscape */ $mValueData[\PinBlooms\MasterData\Model\MasterData::PINBLOOMS_MASTERDATA_M_ISSUE_TYPE];
+                                ?></p>
+            <?php } ?>
+
+            <?php if ($block->getFlagToShowFieldsByFieldName(
+                \PinBlooms\MasterData\Model\MasterData::PINBLOOMS_MASTERDATA_M_NAME
+            )) { ?>
+                <p>Name : <?= /* @noEscape */ $mValueData[\PinBlooms\MasterData\Model\MasterData::PINBLOOMS_MASTERDATA_M_NAME];
+                            ?></p>
+            <?php } ?>
+        </div>
+        <div class="masterdata-third-div">
+            <p>If you have scanned the QR Code from the bottle cap of one of our products & are redirected to this page,
+                then your product is bought from wellness Extracts original website OR from our Authorised Reseller
+                partners.
+            </p>
+            <p>We are glad you've reached here, we strive to keep our customers well-informed and safe.</p>
+            <h3>Thank you for purchasing Wellness Extracts Authenticated product.</h3>
+        </div>
+    <?php } else { ?>
+        <div class="masterdata-first-div else-height else-heading">
+            <h3>OOPS! NO RECORD FOUND</h3>
+            <p class="masterdata-line-else"></p>
+            <img src="<?= /* @noEscape */ $elseImg ?>" alt="notFound">
+        </div>
+        <div class="masterdata-second-div-else">
+            <p>No records from our database matches with the QR code scanned.
+                Please scanned another QR code from the bottle cap of one of our products.
+            </p>
+            <p>Seems like it's not an authorised purchase. If you've reached here, you may contact
+                <b style="color:#1979c3;">customercare@welnessextract.com</b> and we'd be happy to assist you in case
+                of any queries.
+            </p>
+            <h3>We strive to keep our customers well-informed safe.</h3>
+        </div>
+    <?php } ?>
+</section>

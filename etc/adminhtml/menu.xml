@@ -1,0 +1,42 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="PinBlooms_MasterData::masterdata"
+             title="Master Data"
+             module="PinBlooms_MasterData"
+             sortOrder="25"
+             resource="PinBlooms_MasterData::masterdata"
+             dependsOnConfig="masterdataconfiguration/setting/enable"
+        />
+        <add id="PinBlooms_MasterData::configurations"
+             title="Settings"
+             module="PinBlooms_MasterData"
+             sortOrder="10"
+             parent="PinBlooms_MasterData::masterdata"
+             resource="PinBlooms_MasterData::configurations"
+        />
+        <!-- <add id="PinBlooms_MasterData::configuration"
+             title="Configuration"
+             module="PinBlooms_MasterData"
+             sortOrder="1"
+             parent="PinBlooms_MasterData::configurations"
+             action="adminhtml/system_config/edit/section/masterdataconfiguration"
+             resource="PinBlooms_MasterData::configuration"
+        /> -->
+        <add id="PinBlooms_MasterData::first_menu"
+             title="Listings"
+             module="PinBlooms_MasterData"
+             sortOrder="20"
+             parent="PinBlooms_MasterData::masterdata"
+             resource="PinBlooms_MasterData::first_menu"
+        />
+        <add id="PinBlooms_MasterData::listing"
+             title="Master Data"
+             module="PinBlooms_MasterData"
+             sortOrder="1"
+             parent="PinBlooms_MasterData::first_menu"
+             action="masterdata/index/index"
+             resource="PinBlooms_MasterData::listing"
+        />
+    </menu>
+</config>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="PinBlooms\MasterData\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">pinblooms_masterdata</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="custom_handler" xsi:type="object">PinBlooms\MasterData\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
