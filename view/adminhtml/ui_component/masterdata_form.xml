@@ -68,5 +68,38 @@
                 <disabled>0</disabled>
             </settings>
         </field>
+        <field name="m_product_type" sortOrder="40" formElement="input">
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Product Type</label>
+                <dataScope>m_product_type</dataScope>
+                <disabled>0</disabled>
+            </settings>
+        </field>
+        <field name="m_category" sortOrder="50" formElement="input">
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Category</label>
+                <dataScope>m_category</dataScope>
+                <disabled>0</disabled>
+            </settings>
+        </field>
+        <field name="m_issue_type" sortOrder="60" formElement="input">
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Issue Type</label>
+                <dataScope>m_issue_type</dataScope>
+                <disabled>0</disabled>
+            </settings>
+        </field>
     </fieldset>
 </form>

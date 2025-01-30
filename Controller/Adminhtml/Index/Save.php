@@ -13,7 +13,7 @@ use PinBlooms\MasterData\Model\MasterDataFactory;
 class Save extends Action
 {
     /**
-     * @var MasterdataSkuPackageFactory
+     * @var MasterDataFactory
      */
     private $masterDataFactory;
 

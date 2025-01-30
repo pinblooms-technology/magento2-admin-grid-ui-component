@@ -2,22 +2,8 @@
 
 namespace PinBlooms\MasterData\Helper;
 
-use PinBlooms\MasterData\Model\ValueMappingFactory;
-use PinBlooms\MasterData\Model\ResourceModel\ValueMapping as ValueMappingResource;
-
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
-
-    /**
-     * @var ValueMappingFactory
-     */
-    protected $valueMappingFactory;
-
-    /**
-     * @var ValueMappingResource
-     */
-    protected $valueMappingResource;
-
     /**
      * @var \Magento\Framework\File\Csv
      */
@@ -45,31 +31,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $urlRewriteResource;
 
     /**
-     * @var Magento\Framework\App\ResourceConnection
-     */
-    private $resourceConnection;
-
-    /**
-     * @var \PinBlooms\MasterData\Model\MasterDataProductTypeFactory
-     */
-    private $masterDataProductTypeFactory;
-
-    /**
-     * @var \PinBlooms\MasterData\Model\ResourceModel\MasterDataProductType
-     */
-    private $masterDataProductTypeResource;
-
-    /**
-     * @var \PinBlooms\MasterData\Model\ResourceModel\MasterDataIssueType
-     */
-    private $masterDataIssueTypeResource;
-
-    /**
-     * @var \PinBlooms\MasterData\Model\MasterDataIssueTypeFactory
-     */
-    private $masterDataIssueTypeFactory;
-
-    /**
      * Data function
      *
      * @param \Magento\Framework\App\Helper\Context $context
@@ -78,13 +39,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \PinBlooms\MasterData\Model\ResourceModel\MasterData $masterDataResource
      * @param \PinBlooms\MasterData\Model\ResourceModel\MasterData\CollectionFactory $masterDataCollection
      * @param \PinBlooms\MasterData\Logger\Logger $logger
-     * @param \Magento\Framework\App\ResourceConnection $resourceConnection
-     * @param ValueMappingFactory $valueMappingFactory
-     * @param ValueMappingResource $valueMappingResource
-     * @param \PinBlooms\MasterData\Model\MasterDataProductTypeFactory $masterDataProductTypeFactory
-     * @param \PinBlooms\MasterData\Model\ResourceModel\MasterDataProductType $masterDataProductTypeResource
-     * @param \PinBlooms\MasterData\Model\ResourceModel\MasterDataIssueType $masterDataIssueTypeResource
-     * @param \PinBlooms\MasterData\Model\MasterDataIssueTypeFactory $masterDataIssueTypeFactory
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -93,14 +47,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \PinBlooms\MasterData\Model\ResourceModel\MasterData $masterDataResource,
         \PinBlooms\MasterData\Model\ResourceModel\MasterData\CollectionFactory
         $masterDataCollection,
-        \PinBlooms\MasterData\Logger\Logger $logger,
-        \Magento\Framework\App\ResourceConnection $resourceConnection,
-        ValueMappingFactory $valueMappingFactory,
-        ValueMappingResource $valueMappingResource,
-        \PinBlooms\MasterData\Model\MasterDataProductTypeFactory $masterDataProductTypeFactory,
-        \PinBlooms\MasterData\Model\ResourceModel\MasterDataProductType $masterDataProductTypeResource,
-        \PinBlooms\MasterData\Model\ResourceModel\MasterDataIssueType $masterDataIssueTypeResource,
-        \PinBlooms\MasterData\Model\MasterDataIssueTypeFactory $masterDataIssueTypeFactory
+        \PinBlooms\MasterData\Logger\Logger $logger
     ) {
         parent::__construct($context);
         $this->csv = $csv;
@@ -108,13 +55,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->masterDataResource = $masterDataResource;
         $this->masterDataCollection = $masterDataCollection;
         $this->logger = $logger;
-        $this->resourceConnection = $resourceConnection;
-        $this->valueMappingFactory = $valueMappingFactory;
-        $this->valueMappingResource = $valueMappingResource;
-        $this->masterDataProductTypeFactory = $masterDataProductTypeFactory;
-        $this->masterDataProductTypeResource = $masterDataProductTypeResource;
-        $this->masterDataIssueTypeResource = $masterDataIssueTypeResource;
-        $this->masterDataIssueTypeFactory = $masterDataIssueTypeFactory;
     }
 
     /**
@@ -140,129 +80,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 ['Message' => $e->getMessage(), 'Path' => __METHOD__]
             );
             return 0;
-        }
-    }
-
-    /**
-     * ImportIssueTypeData
-     *
-     * @param string $csvFilePath
-     * @param int $key
-     *
-     * @return array
-     */
-    public function importIssueTypeData($csvFilePath = '', $key = 1)
-    {
-        try {
-            $csvData = $this->csv->getData($csvFilePath);
-            if (!empty($csvData) && isset($csvData[0]) && isset($csvData[$key])) {
-                $headers = $csvData[0]; // Get headers of CSV
-                $issueTypeKey = $this->getKeyByHeader('m_issue_type', $headers); // Column name for issue type
-
-                if ($issueTypeKey === false) {
-                    return ['success' => false, 'message' => '"m_issue_type" column not found in CSV'];
-                }
-
-                $issueTypeValue = trim($csvData[$key][$issueTypeKey]);
-
-                if (empty($issueTypeValue)) {
-                    return ['success' => false, 'message' => 'No Issue Type value found on key: ' . $key];
-                }
-
-                // Load the resource and factory for the issue type model
-                $issueTypeModel = $this->masterDataIssueTypeFactory->create();
-                $this->masterDataIssueTypeResource->load(
-                    $issueTypeModel,
-                    $issueTypeValue,
-                    'issue_type_value'
-                );
-
-                if (!empty($issueTypeModel->getData())) {
-                    // Update existing issue type if it exists
-                    $issueTypeModel->setIssueTypeValue($issueTypeValue);
-                    $this->masterDataIssueTypeResource->save($issueTypeModel);
-                    $message = 'Updated Successfully For Issue Type: ' . $issueTypeValue;
-                } else {
-                    // Create a new issue type entry
-                    $issueTypeModel->setData([
-                        'issue_type_value' => $issueTypeValue,
-                    ]);
-                    $this->masterDataIssueTypeResource->save($issueTypeModel);
-                    $message = 'Uploaded Successfully For Issue Type: ' . $issueTypeValue;
-                }
-
-                return ['success' => true, 'message' => $message];
-            } else {
-                return ['success' => false, 'message' => 'No Header OR No Data Found on key: ' . $key];
-            }
-        } catch (\Exception $e) {
-            $this->logger->info(
-                "PinBlooms_MasterData",
-                ['Message' => $e->getMessage(), 'Path' => __METHOD__]
-            );
-            return ['success' => false, 'message' => $e->getMessage()];
-        }
-    }
-
-
-    /**
-     * ImportProductTypeData
-     *
-     * @param string $csvFilePath
-     * @param int $key
-     *
-     * @return array
-     */
-    public function importProductTypeData($csvFilePath = '', $key = 1)
-    {
-        try {
-            $csvData = $this->csv->getData($csvFilePath);
-            if (!empty($csvData) && isset($csvData[0]) && isset($csvData[$key])) {
-                $headers = $csvData[0]; // Get headers of CSV
-                $productTypeKey = $this->getKeyByHeader('m_product_type', $headers); // Column name for product type
-
-                if ($productTypeKey === false) {
-                    return ['success' => false, 'message' => '"m_product_type" column not found in CSV'];
-                }
-
-                $productTypeValue = trim($csvData[$key][$productTypeKey]);
-
-                if (empty($productTypeValue)) {
-                    return ['success' => false, 'message' => 'No Product Type value found on key: ' . $key];
-                }
-
-                // Load the resource and factory for the product type model
-                $productTypeModel = $this->masterDataProductTypeFactory->create();
-                $this->masterDataProductTypeResource->load(
-                    $productTypeModel,
-                    $productTypeValue,
-                    'product_type_value'
-                );
-
-                if (!empty($productTypeModel->getData())) {
-                    // Update existing product type if it exists
-                    $productTypeModel->setProductTypeValue($productTypeValue);
-                    $this->masterDataProductTypeResource->save($productTypeModel);
-                    $message = 'Updated Successfully For Product Type: ' . $productTypeValue;
-                } else {
-                    // Create a new product type entry
-                    $productTypeModel->setData([
-                        'product_type_value' => $productTypeValue,
-                    ]);
-                    $this->masterDataProductTypeResource->save($productTypeModel);
-                    $message = 'Uploaded Successfully For Product Type: ' . $productTypeValue;
-                }
-
-                return ['success' => true, 'message' => $message];
-            } else {
-                return ['success' => false, 'message' => 'No Header OR No Data Found on key: ' . $key];
-            }
-        } catch (\Exception $e) {
-            $this->logger->info(
-                "PinBlooms_MasterData",
-                ['Message' => $e->getMessage(), 'Path' => __METHOD__]
-            );
-            return ['success' => false, 'message' => $e->getMessage()];
         }
     }
 
@@ -323,48 +140,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $data = ['success' => false, 'message' => $e->getMessage()];
         }
         return $data;
-    }
-
-
-
-    /**
-     * Get parent IDs for a given record.
-     *
-     * @param array $data
-     * @param string $childValue
-     * @param string $childKey
-     * @param string $parentKey
-     * @param array $updateParentData
-     * @return array
-     */
-    private function getParentKeyId($data, $childValue, $childKey, $parentKey, $updateParentData)
-    {
-        $parentData = [];
-        foreach ($data as $item) {
-            if (isset($item[$childKey]) && $item[$childKey] === $childValue) {
-                foreach ($updateParentData as $childItem) {
-                    if (!empty($childItem['name']) && !empty($item[$parentKey]) && $childItem['name'] === $item[$parentKey]) {
-                        $parentData[] = $childItem['entity_id'];
-                    }
-                }
-            }
-        }
-        return $parentData;
-    }
-
-    /**
-     * Is Duplicate Entry function
-     *
-     * @param string $name
-     * @param string $headerLabel
-     * @return boolean
-     */
-    private function isDuplicateEntry($name, $headerLabel)
-    {
-        $collection = $this->valueMappingFactory->create()->getCollection();
-        $collection->addFieldToFilter('name', $name)
-            ->addFieldToFilter('header_label', $headerLabel);
-        return $collection->getSize() > 0; // Returns true if a duplicate exists
     }
 
     /**
